@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  minecraft-pi:
+    image: thebrokenrail/minecraft-pi-reborn-server
+    volumes:
+      ./mpi-data:/data
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    network_mode: host
