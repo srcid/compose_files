@@ -1,0 +1,21 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      - type: bind
+        source: /home/alcides/Videos/filmes
+        target: /multimedia/filmes
+        read_only: true
+      - type: bind
+        source: /home/alcides/series
+        target: /multimedia/series
+        read_only: true
+      - "./binds/config:/config"
+      - "./binds/cache:/cache"
+    ports:
+      - 8096:8096
+    restart: unless-stopped
