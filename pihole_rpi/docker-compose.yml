@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  pihole:
+    image: pihole/pihole:latest
+    hostname: pihole
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp" # for DHCP
+      - "80:80/tcp"
+    volumes:
+      - etc-pihole:/etc/pihole
+      - etc-dnsmasq.d:/etc/dnsmasq.d
+    environment:
+      - TZ=America/Sao_Paulo
+      - WEBPASSWORD=${PASSWORD}
+      - FTLCONF_LOCAL_IPV4=0.0.0.0
+      - PIHOLE_DNS_=cloudflared#5053
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    restart: unless-stopped
+    networks:
+      - pihole-net
+    depends_on:
+      - cloudflared
+  
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: --no-autoupdate proxy-dns
+    environment:
+      - "TUNNEL_DNS_UPSTREAM=https://1.1.1.1/dns-query,https://1.0.0.1/dns-query"
+      - "TUNNEL_DNS_ADDRESS=0.0.0.0"
+      - "TUNNEL_DNS_PORT=5053"
+    restart: unless-stopped
+    networks:
+      - pihole-net
+
+volumes:
+  etc-pihole:
+  etc-dnsmasq.d:
+
+networks:
+  pihole-net:
