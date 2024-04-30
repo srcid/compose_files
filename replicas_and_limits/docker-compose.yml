@@ -1,0 +1,11 @@
+services:
+  app:
+    image: docker.io/library/alpine:3.19.1
+    command: "/bin/sh -c 'apk update && apk add stress-ng && stress-ng --vm 1 --vm-bytes 1G --timeout 120s'"
+    deploy:
+      mode: replicated
+      replicas: 2
+      resources:
+        limits:
+          memory: 500M
+          cpus: "1.0"
